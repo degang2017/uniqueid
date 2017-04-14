@@ -1,0 +1,12 @@
+uniqueid.lo: /opt/php-7.0.16/ext/uniqueid/uniqueid.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/opt/php-7.0.16/ext/uniqueid $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /opt/php-7.0.16/ext/uniqueid/uniqueid.c -o uniqueid.lo 
+incr.lo: /opt/php-7.0.16/ext/uniqueid/incr.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/opt/php-7.0.16/ext/uniqueid $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /opt/php-7.0.16/ext/uniqueid/incr.c -o incr.lo 
+semop.lo: /opt/php-7.0.16/ext/uniqueid/semop.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/opt/php-7.0.16/ext/uniqueid $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /opt/php-7.0.16/ext/uniqueid/semop.c -o semop.lo 
+$(phplibdir)/uniqueid.la: ./uniqueid.la
+	$(LIBTOOL) --mode=install cp ./uniqueid.la $(phplibdir)
+
+./uniqueid.la: $(shared_objects_uniqueid) $(UNIQUEID_SHARED_DEPENDENCIES)
+	$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_uniqueid) $(UNIQUEID_SHARED_LIBADD)
+

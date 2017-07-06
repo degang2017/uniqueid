@@ -16,6 +16,8 @@
    +----------------------------------------------------------------------+
  */
 #include "semop.h"
+#include "php.h"
+#include "Zend/zend_exceptions.h"
 
 sem_t create_sem(key_t key, int value) {
     union semun sem;
@@ -26,7 +28,7 @@ sem_t create_sem(key_t key, int value) {
         semid = semget(key, 1, IPC_EXCL|0666);
     } else {
         if (semctl(semid, 0, SETVAL, sem) == -1) {
-            fprintf(stderr, "sem ctl error %d\n", errno);
+            php_error_docref(NULL, E_WARNING, "sem ctl error %d", errno);
             return -1;
         }
     }
@@ -38,7 +40,7 @@ sem_t create_sem(key_t key, int value) {
 int sem_p(sem_t sem_id) {
     struct sembuf sops = {0, -1, SEM_UNDO};
     if (semop(sem_id,&sops, 1) == -1) {
-        fprintf(stderr, "sem op error %d\n", errno);
+        php_error_docref(NULL, E_WARNING, "sem op error %d", errno);
         return -1;
     }
     return 0;
@@ -47,7 +49,7 @@ int sem_p(sem_t sem_id) {
 int sem_v(sem_t sem_id) {
     struct sembuf sops = {0, +1, SEM_UNDO};
     if (semop(sem_id, &sops, 1) == -1) {
-        fprintf(stderr, "sem op error %d\n", errno);
+        php_error_docref(NULL, E_WARNING, "sem op error %d", errno);
         return -1;
     }
     return 0;
@@ -57,6 +59,6 @@ void sem_destroy(sem_t sem_id) {
     union semun sem;
     sem.val = 0;
     if (sem_id != 0 && semctl(sem_id, 0, IPC_RMID, sem) == -1) {
-        fprintf(stderr, "sem destroy erro %d\n", errno);
+        php_error_docref(NULL, E_WARNING, "sem destroy error %d", errno);
     }
 }

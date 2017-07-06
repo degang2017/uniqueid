@@ -16,6 +16,8 @@
    +----------------------------------------------------------------------+
  */
 #include "incr.h"
+#include "php.h"
+#include "Zend/zend_exceptions.h"
    
 int create_shm(key_t key) {
     shm_t shmid = shmget(key, 128, IPC_CREAT|IPC_EXCL|0604);
@@ -26,7 +28,7 @@ int create_shm(key_t key) {
 
     shms = (int *)shmat(shmid, 0, 0);
     if (*shms == -1) {
-        fprintf(stderr, "shmat create error %d\n", errno);
+        php_error_docref(NULL, E_WARNING, "shmat create error %d", errno);
         return -1;
     }
     return shmid;
@@ -34,7 +36,7 @@ int create_shm(key_t key) {
 
 int delete_shm() {
     if (shms != 0 && shmdt(shms) == -1) {
-        fprintf(stderr, "shmdt delete error %d\n", errno);
+        php_error_docref(NULL, E_WARNING, "shmat delete error %d", errno);
         return -1;
     }
     return 0;
